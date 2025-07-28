@@ -1,0 +1,139 @@
+{
+  "name": "store_user",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "store_user",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -480,
+        -272
+      ],
+      "id": "ade86566-47f1-40d0-827e-2a5969154d4b",
+      "name": "Webhook",
+      "webhookId": "8cad6ad6-5ffa-4560-bf5e-18959db19894"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "Users",
+          "mode": "list",
+          "cachedResultName": "Users"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "created_at": "="
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone_number",
+              "displayName": "phone_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -256,
+        -272
+      ],
+      "id": "47222844-4b2c-4cf9-9ecf-e47dab27b695",
+      "name": "Insert rows in a table",
+      "credentials": {
+        "postgres": {
+          "id": "rRNRYMccpgVme3d4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -48,
+        -272
+      ],
+      "id": "1a94338f-4d2b-44e4-a427-b78342f839c7",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Insert rows in a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert rows in a table": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "126320f8-6e66-4528-bd69-49048f25671d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2cb143d4b6a60f171da503f41db04512e10328c8fd982a9149630f4566525749"
+  },
+  "id": "sSPN2lOB82KaKTgk",
+  "tags": []
+}

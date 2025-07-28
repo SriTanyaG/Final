@@ -1,0 +1,213 @@
+{
+  "name": "Check_user",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "check_user",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -544,
+        -128
+      ],
+      "id": "eb42e411-9108-4613-8039-052559f248c8",
+      "name": "Webhook",
+      "webhookId": "b0ce6758-9b11-4e90-a155-28c7ce23144e"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "Users",
+          "mode": "list",
+          "cachedResultName": "Users"
+        },
+        "where": {
+          "values": [
+            {
+              "column": "email",
+              "value": "={{ $json.body.user_email }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -336,
+        -128
+      ],
+      "id": "040a5ed5-d75f-4396-901f-ea99a31687c4",
+      "name": "Select rows from a table",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "rRNRYMccpgVme3d4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d1c5190f-7157-4e3f-bdd2-5885ea210b0a",
+              "leftValue": "={{ $json.email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -112,
+        -128
+      ],
+      "id": "e2e70dbc-80f7-478e-8e04-aef778f24e37",
+      "name": "If",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        112,
+        -224
+      ],
+      "id": "9ffd11de-1021-4d24-aca5-291c36e11d50",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        112,
+        -48
+      ],
+      "id": "663f15e8-36c2-47a0-bb2e-623860d3ae74",
+      "name": "Respond to Webhook1"
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "kabilan20040521.app.n8n.cloud",
+            "user-agent": "Python/3.12 aiohttp/3.11.16",
+            "content-length": "47",
+            "accept": "*/*",
+            "accept-encoding": "gzip, br",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "34.59.11.47",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "US",
+            "cf-ray": "96622fd4d612eabf-ORD",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "x-forwarded-for": "34.59.11.47, 172.70.127.118",
+            "x-forwarded-host": "kabilan20040521.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-76-b4b8c88f-z4zqc",
+            "x-is-trusted": "yes",
+            "x-real-ip": "34.59.11.47"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "user_email": "ravichandrankabilan@gmail.com"
+          },
+          "webhookUrl": "https://kabilan20040521.app.n8n.cloud/webhook/check_user",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Select rows from a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select rows from a table": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e2e0a615-99ec-4264-81fe-b614e24699de",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2cb143d4b6a60f171da503f41db04512e10328c8fd982a9149630f4566525749"
+  },
+  "id": "TGD33aHzlaxDjy2r",
+  "tags": []
+}

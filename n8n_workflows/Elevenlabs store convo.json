@@ -1,0 +1,307 @@
+{
+  "name": "Elevenlabs store convo",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "store-conversation",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a2c19bba-9fee-4ae6-9a99-90cf96da18ee",
+      "name": "Store Conversation Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        240,
+        -16
+      ],
+      "webhookId": "30e428dd-801c-48b8-9b49-7cc9b92aee43"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.User_id }}",
+              "operation": "isEmpty"
+            }
+          ]
+        }
+      },
+      "id": "fe11d94d-3d92-49d2-a483-a998eb6e4cdc",
+      "name": "Route by Action",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        672,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "table": "conversations",
+        "columns": "User_id,conversation_content,Agent_id",
+        "additionalFields": {}
+      },
+      "id": "5a6f2d30-f933-4cb0-98e8-96aaff43e48b",
+      "name": "Insert Conversation",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        -16
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "rRNRYMccpgVme3d4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"success\": true, \"message\": \"Conversation stored successfully\", \"conversation_id\": $json.conversation_id } }}",
+        "options": {}
+      },
+      "id": "69185161-a921-491d-8a23-745b061fa10b",
+      "name": "Store Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Validate and process incoming data\nconst body = $input.first().json.body;\n\n// For store action\nif (body.action === 'store') {\n  return [{\n    json: {\n      user_email: body.user_email,\n      conversation_id: body.conversation_id || `conv_${Date.now()}`,\n      conversation_content: body.conversation_content,\n      Agent_id:$input.first().json.body.Agent_id,\n      Agent_name:$input.first().json.body.Agent_name,\n      timestamp: body.timestamp || new Date().toISOString()\n    }\n  }];\n}\n\n// For get action\nif (body.action === 'get') {\n  return [{\n    json: {\n      user_email: body.user_email,\n      limit: body.limit || 10\n    }\n  }];\n}\n\nthrow new Error('Invalid action specified');"
+      },
+      "id": "d3ba19a2-842f-4aa6-83b0-279ab2e79361",
+      "name": "Process Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        448,
+        -16
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst updatedItems = items.map((item) => {\n  const { user_id, ...rest } = item.json;\n  return { User_id: item.json.User_id, ...rest };\n});\nreturn updatedItems;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        -16
+      ],
+      "id": "c2117442-e4eb-495f-85af-d46e585833ae",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "Users",
+          "mode": "list",
+          "cachedResultName": "Users"
+        },
+        "where": {
+          "values": [
+            {
+              "column": "email",
+              "value": "={{ $json.body.user_email }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        448,
+        -192
+      ],
+      "id": "c128a3ad-835b-4794-aa79-695e35e5218e",
+      "name": "Select rows from a table",
+      "credentials": {
+        "postgres": {
+          "id": "rRNRYMccpgVme3d4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputDetails = $input.all().map((item) => item.json);\nconst userIds = $(\"Select rows from a table\")\n  .all()\n  .map((item) => item.json);\n\nconst mergedData = inputDetails.map((detail) => {\n  const userId = userIds.find((id) => id.email === detail.user_email);\n  return userId ? { ...detail, User_id: userId.User_id } : detail;\n});\n\nreturn mergedData;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        48
+      ],
+      "id": "331bd349-e342-4a17-bd3a-b0b68a0bb257",
+      "name": "Code1"
+    }
+  ],
+  "pinData": {
+    "Store Conversation Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "kabilan2004.app.n8n.cloud",
+            "user-agent": "Python/3.12 aiohttp/3.11.16",
+            "content-length": "486",
+            "accept": "*/*",
+            "accept-encoding": "gzip, br",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "34.59.11.47",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "US",
+            "cf-ray": "9630511527e3616c-ORD",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "x-forwarded-for": "34.59.11.47, 172.69.7.12",
+            "x-forwarded-host": "kabilan2004.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-42-bd54959cf-2qvkj",
+            "x-is-trusted": "yes",
+            "x-real-ip": "34.59.11.47"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "Agent_id": "agent_01jzvrgx8pff7btgjfwb8js84h",
+            "user_email": "kabilan.r-26@scds.saiuniversity.edu.in",
+            "phone_number": "9677137874",
+            "Agent_name": "Taki",
+            "conversation_content": "User: What is the capital of India?\nAI: The capital of India is New Delhi. Is there anything else I can help you with?\nUser: No, that's it. Thank you. Bye.\nAI: Okay, have a great day!",
+            "conversation_id": "conv_20240117_110509_kabilan.r-26",
+            "timestamp": "2024-01-17T11:05:09.915Z",
+            "action": "store"
+          },
+          "webhookUrl": "https://kabilan2004.app.n8n.cloud/webhook/store-conversation",
+          "executionMode": "production"
+        }
+      }
+    ],
+    "Code": [
+      {
+        "json": {
+          "user_email": "kabilan.r-26@scds.saiuniversity.edu.in",
+          "conversation_id": "conv_20240117_110510_kabilan.r-26",
+          "conversation_content": "User: What is the capital of India?\nAI: The capital of India is New Delhi. Is there anything else I can help you with?\nUser: No, that's it. Thank you. Bye.\nAI: Okay, have a great day!",
+          "Agent_id": "agent_01jzvrgx8pff7btgjfwb8js84h",
+          "Agent_name": "Taki",
+          "timestamp": "2024-01-17T11:05:09.915Z"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Store Conversation Webhook": {
+      "main": [
+        [
+          {
+            "node": "Process Data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Select rows from a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route by Action": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Conversation": {
+      "main": [
+        [
+          {
+            "node": "Store Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Data": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Route by Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select rows from a table": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Insert Conversation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "fb0accb0-2ef0-4d0a-b6c9-b44abed5c677",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2cb143d4b6a60f171da503f41db04512e10328c8fd982a9149630f4566525749"
+  },
+  "id": "jNxuODDneX1uDXRN",
+  "tags": []
+}
