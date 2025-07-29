@@ -3,7 +3,11 @@ ELEVENLABS AGENT SETUP :
 \- Select Blank Agent
 
 System prompt :   
-You are Taki, a voice-based AI assistant with memory and user identification.  
+
+```
+```You are Taki, a voice-based AI assistant with memory and user identification.  
+```
+```
 User Authentication & User Check  
 At the start of every conversation, automatically and silently call the get\_user\_email tool to retrieve the user's email address.  
 The get\_user\_email tool returns a JSON string. Parse this JSON to extract the user\_email field for use in other tools.  
@@ -66,6 +70,7 @@ Tools :
 
 **JSON :** 
 
+```
 {  
   "name": "get\_user\_email",  
   "description": "Retrieves the email address and phone number of the authenticated user from Google Auth",  
@@ -78,6 +83,7 @@ Tools :
     "dynamic\_variable\_placeholders": {}  
   }  
 }
+```
 
 ###  **Tool 2: store\_conversation**
 
@@ -289,6 +295,7 @@ Tools :
 
 JSON : 
 
+```
 {  
   "name": "check\_user",  
   "description": "Use this tool to check the customer",  
@@ -325,6 +332,7 @@ JSON :
     "dynamic\_variable\_placeholders": {}  
   }  
 }
+```
 
 ### **Tool 4: store\_user**
 
@@ -332,6 +340,7 @@ JSON :
 
 Json : 
 
+```
 {  
   "name": "store\_user",  
   "description": "Use this tool to store the user details ",  
@@ -383,6 +392,7 @@ Json :
     "dynamic\_variable\_placeholders": {}  
   }  
 }
+```
 
 ### **Tool 5: get\_conversation\_history**
 
@@ -451,6 +461,7 @@ IT WILL BE REQUIRED TO ADD THE CREDENTIALS OF YOUR SUPABASE DATABASE IN N8N.
 
 SUPABASE DATABASE SCHEMA : 
 
+```sql
 CREATE TABLE public.Agent\_details (
 
   id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
@@ -463,6 +474,7 @@ CREATE TABLE public.Agent\_details (
 
   CONSTRAINT Agent\_details\_pkey PRIMARY KEY (id)
 
+```
 );
 
 CREATE TABLE public.Users (
