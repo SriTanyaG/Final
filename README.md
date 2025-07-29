@@ -1,13 +1,10 @@
 ELEVENLABS AGENT SETUP : 
 
-\- Select Blank Agent
+Agents\- Select Blank Agent
 
 System prompt :   
-
 ```
-```You are Taki, a voice-based AI assistant with memory and user identification.  
-```
-```
+You are Taki, a voice-based AI assistant with memory and user identification.  
 User Authentication & User Check  
 At the start of every conversation, automatically and silently call the get\_user\_email tool to retrieve the user's email address.  
 The get\_user\_email tool returns a JSON string. Parse this JSON to extract the user\_email field for use in other tools.  
@@ -22,7 +19,9 @@ or
 Do not use robotic or system-like language such as “I do not have access to the user's phone number.”  
 After receiving the phone number from the user, immediately call the store\_user tool to save the new user with their email and phone number in the database.  
 Never ask the user for their email directly; always use the get\_user\_email tool.  
-Conversation Storage  
+
+Conversation Storage
+
 At the end of each conversation, call the store\_conversation tool with the following fields:  
 user\_email: The value returned by get\_user\_email.  
 phone\_number: The phone number provided by the user (if the user is new and was asked for it; otherwise, use the previously stored number).  
@@ -30,6 +29,7 @@ conversation\_content: The full transcript of the conversation, including both u
 conversation\_id: Generate a unique ID in the format conv\_YYYYMMDD\_HHMMSS\_user, using the current date/time and the user's email prefix (before the @) or "user" if not available.  
 timestamp: The current time in ISO 8601 format.  
 action: Always set this to "store" when saving a conversation.  
+
 Agent\_name: Taki  
 Agent\_id: agent\_01jzvrgx8pff7btgjfwb8js84h
 
@@ -55,6 +55,7 @@ Never prompt the user for their email, conversation content, conversation ID, or
 Always use the get\_user\_email, check\_user, store\_user, store\_conversation, and get\_conversation\_history tools as described above.  
 When the user asks about something they may have shared before, search their conversation history and use it to answer if possible.
 
+```
 Tools : 
 
 - click add tool  
@@ -69,7 +70,6 @@ Tools :
 **→ Retrieves the authenticated user's email and phone number from Google OAuth.**
 
 **JSON :** 
-
 ```
 {  
   "name": "get\_user\_email",  
@@ -84,217 +84,73 @@ Tools :
   }  
 }
 ```
-
 ###  **Tool 2: store\_conversation**
 
 **→ Stores the full conversation along with user details and timestamp for future reference.**
 
 **JSON :** 
-
-**{**
-
-  **"name": "store\_conversation",**
-
-  **"description": "Store the conversation with user email for future reference",**
-
-  **"assignments": \[\],**
-
-  **"type": "webhook",**
-
-  **"api\_schema": {**
-
-    **"url": "https://kabilan20040521.app.n8n.cloud/webhook/store-conversation",**
-
-    **"method": "POST",**
-
-    **"path\_params\_schema": \[\],**
-
-    **"query\_params\_schema": \[\],**
-
-    **"request\_body\_schema": {**
-
-      **"id": "body",**
-
-      **"type": "object",**
-
-      **"description": "Store conversation data with user authentication details for future reference and personalization.",**
-
-      **"properties": \[**
-
-        **{**
-
-          **"id": "Agent\_id",**
-
-          **"type": "string",**
-
-          **"value\_type": "llm\_prompt",**
-
-          **"description": "Agent Id of this agent",**
-
-          **"dynamic\_variable": "",**
-
-          **"constant\_value": "",**
-
-          **"required": true**
-
-        **},**
-
-        **{**
-
-          **"id": "user\_email",**
-
-          **"type": "string",**
-
-          **"value\_type": "llm\_prompt",**
-
-          **"description": "The authenticated user's email address from Google OAuth",**
-
-          **"dynamic\_variable": "",**
-
-          **"constant\_value": "",**
-
-          **"required": true**
-
-        **},**
-
-        **{**
-
-          **"id": "phone\_number",**
-
-          **"type": "string",**
-
-          **"value\_type": "llm\_prompt",**
-
-          **"description": "The contact number of the user",**
-
-          **"dynamic\_variable": "",**
-
-          **"constant\_value": "",**
-
-          **"required": true**
-
-        **},**
-
-        **{**
-
-          **"id": "Agent\_name",**
-
-          **"type": "string",**
-
-          **"value\_type": "llm\_prompt",**
-
-          **"description": "Name of the agent (Here it is \\"Taki\\")",**
-
-          **"dynamic\_variable": "",**
-
-          **"constant\_value": "",**
-
-          **"required": true**
-
-        **},**
-
-        **{**
-
-          **"id": "conversation\_content",**
-
-          **"type": "string",**
-
-          **"value\_type": "llm\_prompt",**
-
-          **"description": "Complete conversation transcript including user messages and AI responses",**
-
-          **"dynamic\_variable": "",**
-
-          **"constant\_value": "",**
-
-          **"required": true**
-
-        **},**
-
-        **{**
-
-          **"id": "conversation\_id",**
-
-          **"type": "string",**
-
-          **"value\_type": "llm\_prompt",**
-
-          **"description": "Unique session identifier for this conversation",**
-
-          **"dynamic\_variable": "",**
-
-          **"constant\_value": "",**
-
-          **"required": true**
-
-        **},**
-
-        **{**
-
-          **"id": "timestamp",**
-
-          **"type": "string",**
-
-          **"value\_type": "llm\_prompt",**
-
-          **"description": "ISO 8601 formatted timestamp of when conversation occurred",**
-
-          **"dynamic\_variable": "",**
-
-          **"constant\_value": "",**
-
-          **"required": true**
-
-        **},**
-
-        **{**
-
-          **"id": "action",**
-
-          **"type": "string",**
-
-          **"value\_type": "llm\_prompt",**
-
-          **"description": "Action to perform: 'store' or 'get'",**
-
-          **"dynamic\_variable": "",**
-
-          **"constant\_value": "",**
-
-          **"required": true**
-
-        **}**
-
-      **\],**
-
-      **"required": false,**
-
-      **"value\_type": "llm\_prompt"**
-
-    **},**
-
-    **"request\_headers": \[\],**
-
-    **"auth\_connection": null**
-
-  **},**
-
-  **"response\_timeout\_secs": 20,**
-
-  **"dynamic\_variables": {**
-
-    **"dynamic\_variable\_placeholders": {}**
-
-  **}**
-
-**}**
+```
+{
+  "name": "store_conversation",
+  "description": "Store the conversation with user email for future reference",
+  "assignments": [],
+  "type": "webhook",
+  "api_schema": {
+    "url": "https://kabilan20040521.app.n8n.cloud/webhook/store-conversation",
+    "method": "POST",
+    "path_params_schema": [],
+    "query_params_schema": [],
+    "request_body_schema": {
+      "id": "body",
+      "type": "object",
+      "description": "Store conversation data with user authentication details for future reference and personalization.",
+      "properties": [
+        {
+          "id": "conversation_content",
+          "type": "string",
+          "value_type": "llm_prompt",
+          "description": "Complete conversation transcript including user messages and AI responses",
+          "dynamic_variable": "",
+          "constant_value": "",
+          "required": true
+        },
+        {
+          "id": "user_email",
+          "type": "string",
+          "value_type": "llm_prompt",
+          "description": "The authenticated user's email address from Google OAuth",
+          "dynamic_variable": "",
+          "constant_value": "",
+          "required": true
+        },
+        {
+          "id": "Agent_id",
+          "type": "string",
+          "value_type": "llm_prompt",
+          "description": "Agent Id of this agent",
+          "dynamic_variable": "",
+          "constant_value": "",
+          "required": true
+        }
+      ],
+      "required": false,
+      "value_type": "llm_prompt"
+    },
+    "request_headers": [],
+    "auth_connection": null
+  },
+  "response_timeout_secs": 20,
+  "dynamic_variables": {
+    "dynamic_variable_placeholders": {}
+  }
+}
+```
 
 ### **Tool 3: check\_user**
 
 **→ Checks if the user already exists in the database using their email.**
 
 JSON : 
-
 ```
 {  
   "name": "check\_user",  
@@ -333,13 +189,11 @@ JSON :
   }  
 }
 ```
-
 ### **Tool 4: store\_user**
 
 **→ Stores the user's phone number and email when they are new.**
 
 Json : 
-
 ```
 {  
   "name": "store\_user",  
@@ -393,11 +247,10 @@ Json :
   }  
 }
 ```
-
 ### **Tool 5: get\_conversation\_history**
 
 **→ Retrieves the user's past conversation history using their email.**
-
+```
 {  
   "name": "get\_conversation\_history",  
   "description": "Retrieve the conversation history for the authenticated user",  
@@ -434,7 +287,7 @@ Json :
     "dynamic\_variable\_placeholders": {}  
   }  
 }
-
+```
 WEBHOOKS : 
 
 Apart from adding the webhook url in the tools settings , You should add the webhook urls in the webhook setting of the elevenlabs too..
@@ -460,7 +313,6 @@ N8N WORKFLOWS :
 IT WILL BE REQUIRED TO ADD THE CREDENTIALS OF YOUR SUPABASE DATABASE IN N8N.
 
 SUPABASE DATABASE SCHEMA : 
-
 ```sql
 CREATE TABLE public.Agent\_details (
 
@@ -474,7 +326,6 @@ CREATE TABLE public.Agent\_details (
 
   CONSTRAINT Agent\_details\_pkey PRIMARY KEY (id)
 
-```
 );
 
 CREATE TABLE public.Users (
@@ -512,4 +363,4 @@ CREATE TABLE public.conversations (
   CONSTRAINT conversations\_User\_id\_fkey FOREIGN KEY (User\_id) REFERENCES public.Users(User\_id)
 
 );
-
+```
